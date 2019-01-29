@@ -1,0 +1,23 @@
+{
+  "name": "ethereum-match-betting",
+  "version": "0.1.8",
+  "description": "Ethereum Match Betting",
+  "main": "truffle-config.js",
+  "files": [
+    "build",
+    "contracts"
+  ],
+  "scripts": {
+    "build": "truffle compile",
+    "test": "truffle test",
+    "test:coverage": "solidity-coverage"
+  },
+  "dependencies": {
+    "openzeppelin-solidity": "1.10.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "truffle": "4.1.11",
+    "truffle-assertions": "^0.6.3"
+  }
+}
