@@ -4,6 +4,8 @@ const Match = artifacts.require('Match');
 const assert = require("chai").assert;
 const truffleAssert = require('truffle-assertions');
 
+const { convertToUtf8Bytes }  = require('./utils');
+
 contract('BettingFactory', (accounts) => {
 
     let bettingFactory;
@@ -42,13 +44,4 @@ contract('BettingFactory', (accounts) => {
   
 });    
 
-function convertToUtf8Bytes(value) {
-    let myBuffer = [];
-    let str = value;
-    //let buffer = new Buffer(str, 'utf16le');
-    let buffer = new Buffer(str, 'utf8');
-    for (let i = 0; i < buffer.length; i++) {
-        myBuffer.push(buffer[i]);
-    }
-    return myBuffer;
-}
+ 
