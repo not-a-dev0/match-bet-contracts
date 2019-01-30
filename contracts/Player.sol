@@ -1,11 +1,11 @@
-pragma solidity ^0.4.24;
+pragma solidity >=0.4.24;
 
 contract Player {
  
     uint32 public id;
-    bytes32 public name; 
+    bytes public name; 
      
-    constructor(uint32 _id, bytes32 _name) public {
+    constructor(uint32 _id, bytes memory _name) public {
         id = _id;
         name = _name;
     }

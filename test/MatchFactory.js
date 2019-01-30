@@ -16,10 +16,10 @@ contract('BettingFactory', (accounts) => {
 
     beforeEach(async () => {
         bettingFactory = await BettingFactory.new({from: owner});
-        await bettingFactory.createPlayer("Hulk Hogan");
-        await bettingFactory.createPlayer("John Cena");
-        await bettingFactory.createPlayer("Jake The Snake");
-        await bettingFactory.createPlayer("The Undertaker");
+        await bettingFactory.createPlayer(convertToUtf8Bytes("Hulk Hogan"));
+        await bettingFactory.createPlayer(convertToUtf8Bytes("John Cena"));
+        await bettingFactory.createPlayer(convertToUtf8Bytes("Jake The Snake"));
+        await bettingFactory.createPlayer(convertToUtf8Bytes("The Undertaker"));
         const players = await bettingFactory.getPlayers();
         PLAYER_1 = players[0];
         PLAYER_2 = players[1];
@@ -33,12 +33,22 @@ contract('BettingFactory', (accounts) => {
 
 
     it("should able to create Matches", async () => { 
-        await bettingFactory.createMatch("Hulk Hogan vs. John Cena", PLAYER_1, PLAYER_2);
+        await bettingFactory.createMatch(convertToUtf8Bytes("Hulk Hogan vs. John Cena"), PLAYER_1, PLAYER_2);
        
         const matches = await bettingFactory.getMatches();
         console.log(matches);
         assert.equal(matches.length, 1, "Matches list should have a size of 1."); 
     });
- 
-
+  
 });    
+
+function convertToUtf8Bytes(value) {
+    let myBuffer = [];
+    let str = value;
+    //let buffer = new Buffer(str, 'utf16le');
+    let buffer = new Buffer(str, 'utf8');
+    for (let i = 0; i < buffer.length; i++) {
+        myBuffer.push(buffer[i]);
+    }
+    return myBuffer;
+}

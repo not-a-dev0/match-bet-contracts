@@ -1,12 +1,13 @@
-pragma solidity ^0.4.24;
+pragma solidity >=0.4.24;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol"; 
+//import "openzeppelin-solidity/contracts/ownership/Ownable.sol"; 
 import "./Betting.sol";
 import "./Match.sol";
 import "./Player.sol";
 
-contract BettingFactory is Ownable{  
-     
+contract BettingFactory{  
+    address payable owner;
+
     address[] public playersAddressTable;
     mapping(address => Player) public playersTable;
     uint32 public playerId;
@@ -19,15 +20,25 @@ contract BettingFactory is Ownable{
     mapping(address => Betting) public bettingsTable;
     uint32 public bettingId;
 
+    modifier onlyOwner() {
+        require(isOwner());
+        _;
+    }
+
     event BettingCreated(uint32 bettingId);
-    event MatchCreated(uint32 matchId, bytes32 description);
-    event PlayerCreated(uint32 playerId, bytes32 name, address playerAddress);
+    event MatchCreated(uint32 matchId, bytes description);
+    event PlayerCreated(uint32 playerId, bytes name, address playerAddress);
 
     constructor() public {
         owner = msg.sender;
     }
  
-    function createPlayer(bytes32 _name) public onlyOwner {
+    function isOwner() public view returns (bool) {
+        return msg.sender == owner;
+    }
+
+
+    function createPlayer(bytes memory _name) public onlyOwner {
         playerId++;
         Player player = new Player(playerId, _name);
         
@@ -38,17 +49,17 @@ contract BettingFactory is Ownable{
         emit PlayerCreated(player.id(), player.name(), playerAddr);
     }
     
-    function getPlayer(address addr) public view returns (uint32 id, bytes32 name) {
+    function getPlayer(address addr) public view returns (uint32 id, bytes memory name) {
         return (playersTable[addr].id(), playersTable[addr].name());
     }  
 
-    function getPlayers() public view returns (address[]) {
+    function getPlayers() public view returns (address[] memory) {
         return playersAddressTable;
     }
  
     
     
-    function createMatch(bytes32 _description, address _player1, address _player2) public onlyOwner {
+    function createMatch(bytes memory _description, address _player1, address _player2) public onlyOwner {
         matchId++;
         Match m = new Match(matchId, _description, _player1, _player2);
         address matchAddr = address(m);
@@ -57,11 +68,11 @@ contract BettingFactory is Ownable{
         emit MatchCreated(m.matchId(), m.description()); 
     }
 
-    function getMatches() public view returns (address[]) {
+    function getMatches() public view returns (address[] memory) {
         return matchAddressTable;
     }
 
-    function getMatch(address addr) public view returns (uint32 id, bytes32 name, uint32, uint32) {
+    function getMatch(address addr) public view returns (uint32 id, bytes memory name, uint32, uint32) {
         return (matchesTable[addr].matchId(), matchesTable[addr].description(), 
             matchesTable[addr].player1().id(), matchesTable[addr].player2().id());
     }
@@ -76,11 +87,11 @@ contract BettingFactory is Ownable{
         emit BettingCreated(b.id()); 
     }
 
-    function getBettings() public view returns (address[]) {
+    function getBettings() public view returns (address[] memory) {
         return bettingAddressTable;
     }
 
-    function getBetting(address addr) public view returns (uint32 id, uint32 matchId, bytes32 description, uint32 player1_id, uint32 player2_id) {
+    function getBetting(address addr) public view returns (uint32 id, uint32 matchId, bytes memory description, uint32 player1_id, uint32 player2_id) {
         return (bettingsTable[addr].id(), 
                 bettingsTable[addr]._match().matchId(), 
                 bettingsTable[addr]._match().description(),

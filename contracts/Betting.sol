@@ -1,17 +1,17 @@
-pragma solidity ^0.4.24;
+pragma solidity >=0.4.24;
 
 import "./Match.sol";
 import "./Player.sol";
 
 contract Bettor {
 
-    address public bettor;
+    address payable public bettor;
     uint public amount; 
     uint8 public choice;
     uint public amountPaid;
     bool  public paid;
 
-    constructor(address _bettor, uint _amount, uint8 _choice) public {
+    constructor(address payable _bettor, uint _amount, uint8 _choice) public {
         bettor = _bettor;
         amount = _amount;
         choice = _choice;
@@ -50,7 +50,7 @@ contract Betting {
         status = BettingStatus.OPEN;
     }
 
-    function getStatus() public view returns(string) {
+    function getStatus() public view returns(bytes32) {
         return convertBettingStatusToString(status);
     }
     
@@ -66,7 +66,7 @@ contract Betting {
         _match.changeStatus(_status);
     } 
 
-    function bet(uint8 _playerNum, address bettor, uint amount) public payable{ 
+    function bet(uint8 _playerNum, address payable bettor, uint amount) public payable{ 
         require(_playerNum == 1 || _playerNum == 2);
         bettors[_playerNum].push(new Bettor(bettor, amount, _playerNum));
         if (_playerNum == 1) {
@@ -91,6 +91,8 @@ contract Betting {
         Bettor[] memory b = bettors[winner];
         uint amount = address(this).balance / b.length;
         for (uint i=0; i < b.length; i++) {
+            // address payable bettor  =  b[i].bettor();
+            // bettor.transfer(amount);
             b[i].bettor().transfer(amount);            
             b[i].isPaid(true);
             b[i].winningPaidAmount(amount);
@@ -98,7 +100,7 @@ contract Betting {
         status = BettingStatus.PAID;
     }
     
-    function convertBettingStatusToString(BettingStatus s) internal pure returns (string) {
+    function convertBettingStatusToString(BettingStatus s) internal pure returns (bytes32) {
         if (s == BettingStatus.OPEN) {return "open";} 
         if (s == BettingStatus.CLOSED) {return "closed";}
         if (s == BettingStatus.PAID) {return "paid";}     

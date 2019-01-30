@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity >=0.4.24;
 
 import "./Player.sol";
 
@@ -14,7 +14,7 @@ contract Match {
     } 
     
     uint32 public matchId;
-    bytes32 public description;                 // Match description
+    bytes public description;                 // Match description
     Player public player1;                     // first player id
     Player public player2;                     // second player address
     MatchStatus status;                 // enum current status of the match           
@@ -27,17 +27,17 @@ contract Match {
      
 
     event MatchWinner(string winnerName, string loserName);
-    event MatchCreated(uint32 matchId, bytes32 description, uint32 player1, uint32 player2); 
+    event MatchCreated(uint32 matchId, bytes description, uint32 player1, uint32 player2); 
 
-    constructor(uint32 _matchId, bytes32 _description, address _player1, address _player2) public {
+    constructor(uint32 _matchId, bytes memory _description, address _player1, address _player2) public {
         matchId = _matchId;
         description = _description;
         player1 = Player(_player1);
         player2 = Player(_player2);
-        //emit MatchCreated(matchId, description, player1.id(), player2.id());
+        emit MatchCreated(matchId, description, player1.id(), player2.id());
     }
     
-    function convertMatchStatusToString(MatchStatus s) internal pure returns (string) {
+    function convertMatchStatusToString(MatchStatus s) internal pure returns (bytes32) {
         if (s == MatchStatus.PENDING) {return "pending";}
         if (s == MatchStatus.ONGOING) {return "ongoing";}
         if (s == MatchStatus.CLOSED) {return "closed";}
@@ -60,7 +60,7 @@ contract Match {
         status = convertStringToMatchStatus(newStatus);
     }
 
-    function getStatus() public view returns(string) {
+    function getStatus() public view returns(bytes32) {
         return convertMatchStatusToString(status);
     }
      

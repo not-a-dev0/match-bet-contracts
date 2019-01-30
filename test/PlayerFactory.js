@@ -19,32 +19,35 @@ contract('BettingFactory', (accounts) => {
 
 
     it("should able to create Players", async () => { 
-        await bettingFactory.createPlayer("Hulk Hogan");
-        await bettingFactory.createPlayer("John Cena");
+        await bettingFactory.createPlayer(convertToUtf8Bytes("Hulk Hogan"));
+        await bettingFactory.createPlayer(convertToUtf8Bytes("John Cena"));
         const players = await bettingFactory.getPlayers();
         //console.log(players);
         assert.equal(players.length, 2, "Players should have 2 members."); 
     });
 
     it("should able to create a Player and get the details ", async () => { 
-        await bettingFactory.createPlayer("Hulk Hogan"); 
+        await bettingFactory.createPlayer(convertToUtf8Bytes("Hulk Hogan")); 
         const players = await bettingFactory.getPlayers();
         console.log(players[0]);
         assert.equal(players.length, 1, "Players should have 1 member."); 
        
         // const player = Player.at(players[0]);  DOESN'T WORK
-        // console.log(player); 
+        //console.log(players); 
         
-        const [id, name] = await bettingFactory.getPlayer(players[0]);
+        const player = await bettingFactory.getPlayer(players[0]);
+        let name = web3.utils.toUtf8(player.name);
+         
+        //const player = await bettingFactory.playersTable(players[0]);
+        //console.log("+++ player name: ",web3.toUtf8(name));
 
-        // const player = await bettingFactory.playersTable(players[0]);
-        console.log(web3.toUtf8(name));
-
-        assert.equal(id, 1, "Player id should be 1.");
-        assert.equal(web3.toUtf8(name), "Hulk Hogan", "Player name should be 'Hulk Hogan'");
+        assert.equal(player.id.toNumber(), 1, "Player id should be 1.");
+        assert.equal(name.trim(), "Hulk Hogan", "Player name should be 'Hulk Hogan' not " + web3.utils.toUtf8(player.name));
          
     });
  
+
+
  
     // it("add two candidates and assert events", async () => {
     //     let tx = await election.addCandidate("Donald Trump");
@@ -87,3 +90,14 @@ contract('BettingFactory', (accounts) => {
     // });
 
 });    
+
+function convertToUtf8Bytes(value) {
+    let myBuffer = [];
+    let str = value;
+    //let buffer = new Buffer(str, 'utf16le');
+    let buffer = new Buffer(str, 'utf8');
+    for (let i = 0; i < buffer.length; i++) {
+        myBuffer.push(buffer[i]);
+    }
+    return myBuffer;
+}
